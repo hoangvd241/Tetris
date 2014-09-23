@@ -76,6 +76,40 @@ Position.prototype.goRight = function () {
 	return this.move(1, 0);
 }
 
+var TShape = [[0, 1, 0],
+							[1, 1, 1]
+							[0, 0, 0]];
+var LShape = [[1, 0, 0],
+							[1, 0, 0],
+							[1, 1, 0]];
+var SqShape = [[1, 1],
+							[1, 1]];
+var IShape = [[1], [1], [1], [1]];
+var ZShape = [[0, 1, 1], [1, 1, 0]];
+
+Piece.prototype.rotate = function(clockwise){
+	var shape = this.shape;
+	switch (shape.length) {
+		case 1: return new Piece([[1], [1], [1], [1]]);
+		case 2: return this;
+		case 3:
+			var newShape = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+			for (var i = 0; i < 3; i++) {
+				for (var j = 0; j < 3; j++) {
+					if (clockwise) {
+						newShape[j, 2 - i] = shape[i, j];
+					}
+					else {
+						newShape[2 - j, i] = shape[i, j];
+					}
+				}
+			}
+			return new Piece(newShape);
+		case 4:
+			return new Piece([1, 1, 1, 1]);
+	}
+}
+
 Piece.prototype.positions = function (center, rotate) {
 	switch (this.shape) {
 		case "T":
