@@ -46,7 +46,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.js" />
+    <Content Include="Game.js" />
+    <Content Include="Piece.js" />
+    <Content Include="require.js" />
     <Content Include="tetris.js" />
+    <Content Include="underscore.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
