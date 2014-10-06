@@ -1,0 +1,5 @@
+﻿/*global define*/
+define(function ()
+{
+	
+});

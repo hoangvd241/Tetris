@@ -48,8 +48,14 @@
   <ItemGroup>
     <Content Include="config.js" />
     <Content Include="Game.js" />
-    <Content Include="Piece.js" />
+    <Content Include="IShape.js" />
+    <Content Include="LZTShape.js" />
+    <Content Include="Render.js" />
+    <Content Include="Shape.js" />
+    <Content Include="tetris.html" />
+    <Content Include="Zhape.js" />
     <Content Include="require.js" />
+    <Content Include="SShape.js" />
     <Content Include="tetris.js" />
     <Content Include="underscore.js" />
     <Content Include="Web.config" />

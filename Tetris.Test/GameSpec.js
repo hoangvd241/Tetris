@@ -8,9 +8,11 @@ define(['../Tetris/Game'], function (Game)
 		it("isGameOver", function ()
 		{
 			var game = new Game(2, 2);
+			game.board = [[0, 0],
+										[0, 1]];
 			expect(game.isGameOver()).toBe(false);
-			game.board[1][1] = 1;
-			game.board[1][0] = 1;
+			game.board = [[0, 1],
+										[0, 1]];
 			expect(game.isGameOver()).toBe(true);
 		});
 

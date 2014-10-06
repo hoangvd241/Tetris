@@ -37,7 +37,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameSpec.js" />
-    <Content Include="PieceSpec.js" />
+    <Content Include="IShapeSpec.js" />
+    <Content Include="LZTShapeSpec.js" />
+    <Content Include="SShapeSpec.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
