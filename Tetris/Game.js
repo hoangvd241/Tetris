@@ -106,8 +106,13 @@ function ()
 
 	function move(game, oldShape, newShape, oldPos, newPos)
 	{
-		if (isValid(game.board, newShape, newPos))
+		if (isValidOnBoard(game.board, newShape, newPos))
 		{
+			if (landOnBoard(game.board, newShape, newPos))
+			{
+				addShapeOnBoard(game.board, newShape, newPos);
+
+			}
 			removeShapeFromBoard(game.board, oldShape, oldPos);
 			addShapeOnBoard(game.board, newShape, newPos);
 			game.currentShape = newShape;
@@ -122,33 +127,54 @@ function ()
 
 	function addShapeOnBoard(board, shape, shapePos)
 	{
-		fillShapeOnBoard(board, shape, shapePos, 2);
+		var positionsInBoard = shape.positionsInBoard(shapePos);
+		for (var i = 0; i < positionsInBoard.length; i++)
+		{
+			var pos = positionsInBoard[i];
+			board[pos.x][pos.y] = 1;
+		}
 	}
 
 	function fillShapeOnBoard(board, shape, shapePos, value)
 	{
-		var positionsInBoard = shape.positionsInBoard(shapePos);
-		for (var i = 0; i < positionsInBoard.length; i++)
-		{
-			board[positionsInBoard[i].x][positionsInBoard[i].y] = value;
-		}
+
 	}
 
-	function isValid(board, shape, shapePos)
+	function landOnBoard(board, shape, shapePos)
 	{
 		var positionsInBoard = shape.positionsInBoard(shapePos);
 		for(var i = 0; i < positionsInBoard.length; i++)
 		{
-			if (positionsInBoard[i].x < 0 || positionsInBoard[i].x >= board.length || positionsInBoard[i].y < 0 || positionsInBoard[i].y >= board[0].length)
+			var pos = { x: positionsInBoard[i].x + 1, y: positionsInBoard[i].y };
+			if (isInsideTheBoard(board, pos) && (pos.x == board.length -1 || board[pos.x][pos.y] === 1))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function isValidOnBoard(board, shape, shapePos)
+	{
+		var positionsInBoard = shape.positionsInBoard(shapePos);
+		for(var i = 0; i < positionsInBoard.length; i++)
+		{
+			var pos = positionsInBoard[i];
+			if (!isInsideTheBoard(board, pos))
 			{
 				return false;
 			}
-			if (board[positionsInBoard[i].x][positionsInBoard[i].y] === 1)
+			if (board[pos.x][pos.y] === 1)
 			{
 				return false;
 			}
 		}
 		return true;
+	}
+
+	function isInsideTheBoard(board, pos)
+	{
+		return pos.x >= 0 && pos.x <= board.length - 1 && pos.y >= 0 && pos.y <= board[0].length - 1;
 	}
 
 	return Game;
