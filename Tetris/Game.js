@@ -1,182 +1,150 @@
 ﻿/*global define */
 
-define(
-function ()
-{
-	function Game(width, length)
-	{
-		this.board = new Array(length);
-		for (var i = 0; i < length; i++)
-		{
-			this.board[i] = new Array(width);
-			for (var j = 0; j < width; j++)
-			{
-				this.board[i][j] = 0;
-			}
-		}
-	}
-
-	Game.prototype.removeFilledLines = function ()
-	{
-		var resetBottomRows = function (array, startRow)
-		{
-			for (var i = startRow; i < array.length; i++)
-			{
-				for (var j = 0; j < array[0].length; j++)
-				{
-					array[i][j] = 0;
+define(['./ShapeFactory'],
+function (ShapeFactory) {
+	function Game(width, length) {
+		var initBoard = function (game) {
+			game.board = new Array(length);
+			for (var i = 0; i < length; i++) {
+				game.board[i] = new Array(width);
+				for (var j = 0; j < width; j++) {
+					game.board[i][j] = 0;
 				}
 			}
 		};
 
-		var moveRowsToBottom = function (array, startRow, endRow)
-		{
-			for (var i = endRow; i >= startRow; i--)
-			{
-				var idx = board.length - 1 - endRow + i;
-				var tmp = array[idx];
-				array[idx] = array[i];
-				array[i] = tmp;
+		initBoard(this);
+		initShape(this);
+		this.isGameOver = false;
+	}
+
+	Game.prototype.rotateCurrentShape = function () {
+		move(this, this.currentShape, this.currentShape.rotate(), this.currentPos, this.currentPos);
+	};
+
+	Game.prototype.moveDown = function () {
+		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x + 1, y: this.currentPos.y });
+	};
+
+	Game.prototype.moveLeft = function () {
+		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x, y: this.currentPos.y - 1 });
+	};
+
+	Game.prototype.moveRight = function () {
+		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x, y: this.currentPos.y + 1 });
+	};
+
+	function initShape(game) {
+		game.currentShape = ShapeFactory.generateRandomShape();
+		game.currentPos = { x: 0, y: Math.floor(game.board.length / 2) };
+	}
+
+	function move(game, oldShape, newShape, oldPos, newPos) {
+		var isDirtyRow = function (row) {
+			for (var i = 0; i < row.length; i++) {
+				if (row[i] === 1) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		var isFilledRow = function (row) {
+			for (var i = 0; i < row.length; i++) {
+				if (row[i] !== 1) {
+					return false;
+				}
+			}
+			return true;
+		};
+
+		var isInsideTheBoard = function (board, pos) {
+			return pos.x >= 0 && pos.x <= board.length - 1 && pos.y >= 0 && pos.y <= board[0].length - 1;
+		};
+
+		var isValidOnBoard = function (board, shape, shapePos) {
+			var positionsOnBoard = shape.positionsOnBoard(shapePos);
+			for (var i = 0; i < positionsOnBoard.length; i++) {
+				var pos = positionsOnBoard[i];
+				if (!isInsideTheBoard(board, pos)) {
+					return false;
+				}
+				if (board[pos.x][pos.y] === 1) {
+					return false;
+				}
+			}
+			return true;
+		};
+
+		var landOnBoard = function (board, shape, shapePos) {
+			var positionsOnBoard = shape.positionsOnBoard(shapePos);
+			for (var i = 0; i < positionsOnBoard.length; i++) {
+				var pos = { x: positionsOnBoard[i].x + 1, y: positionsOnBoard[i].y };
+				if (isInsideTheBoard(board, pos) && (pos.x === board.length - 1 || board[pos.x][pos.y] === 1)) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		var addShapeOnBoard = function (board, shape, shapePos) {
+			var positionsOnBoard = shape.positionsOnBoard(shapePos);
+			for (var i = 0; i < positionsOnBoard.length; i++) {
+				var pos = positionsOnBoard[i];
+				board[pos.x][pos.y] = 1;
 			}
 		};
 
-		var board = this.board;
+		var removeFilledLines = function (board) {
+			var resetBottomRows = function (array, startRow) {
+				for (var i = startRow; i < array.length; i++) {
+					for (var j = 0; j < array[0].length; j++) {
+						array[i][j] = 0;
+					}
+				}
+			};
 
-		var firstRowFilled = board.length;
-		while (firstRowFilled - 1 >= 0 && isFilledRow(board[firstRowFilled - 1]))
-		{
-			firstRowFilled--;
-		}
-		resetBottomRows(board, firstRowFilled);
+			var moveRowsToBottom = function (array, startRow, endRow) {
+				for (var i = endRow; i >= startRow; i--) {
+					var idx = board.length - 1 - endRow + i;
+					var tmp = array[idx];
+					array[idx] = array[i];
+					array[i] = tmp;
+				}
+			};
 
-		if (firstRowFilled < board.length)
-		{
-			var firstRowDirty = firstRowFilled;
-			while (firstRowDirty - 1 >= 0 && isDirtyRow(board[firstRowDirty - 1]))
-			{
-				firstRowDirty--;
+			var firstRowFilled = board.length;
+			while (firstRowFilled - 1 >= 0 && isFilledRow(board[firstRowFilled - 1])) {
+				firstRowFilled--;
 			}
-			moveRowsToBottom(board, firstRowDirty, firstRowFilled - 1);
-		}
-	};
+			resetBottomRows(board, firstRowFilled);
 
-	function isFilledRow(row)
-	{
-		for (var i = 0; i < row.length; i++)
-		{
-			if (row[i] !== 1)
-			{
-				return false;
+			if (firstRowFilled < board.length) {
+				var firstRowDirty = firstRowFilled;
+				while (firstRowDirty - 1 >= 0 && isDirtyRow(board[firstRowDirty - 1])) {
+					firstRowDirty--;
+				}
+				moveRowsToBottom(board, firstRowDirty, firstRowFilled - 1);
 			}
-		}
-		return true;
-	}
+		};
 
-	function isDirtyRow(row)
-	{
-		for(var i=0; i < row.length; i++)
-		{
-			if (row[i] === 1)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+		var isGameOver = function (game) {
+			return isDirtyRow(game.board[0]);
+		};
 
-	Game.prototype.isGameOver = function ()
-	{
-		return isDirtyRow(this.board[0]);
-	};
-
-	Game.prototype.rotateCurrentShapeLeft = function ()
-	{
-		move(this, this.currentShape, this.currentShape.rotateLeft(), this.currentPos, this.currentPos);
-	}
-
-	Game.prototype.rotateCurrentShapeRight = function ()
-	{
-		move(this, this.currentShape, this.currentShape.rotateRight(), this.currentPos, this.currentPos);
-	}
-
-	Game.prototype.moveDown = function()
-	{
-		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x + 1, y: this.currentPos.y });
-	}
-
-	function move(game, oldShape, newShape, oldPos, newPos)
-	{
-		if (isValidOnBoard(game.board, newShape, newPos))
-		{
-			if (landOnBoard(game.board, newShape, newPos))
-			{
+		if (!game.isGameOver && isValidOnBoard(game.board, newShape, newPos)) {
+			if (landOnBoard(game.board, newShape, newPos)) {
 				addShapeOnBoard(game.board, newShape, newPos);
-
+				removeFilledLines(game.board);
+				initShape(game);
 			}
-			removeShapeFromBoard(game.board, oldShape, oldPos);
-			addShapeOnBoard(game.board, newShape, newPos);
-			game.currentShape = newShape;
-			game.currentPos = newPos;
-		}
-	}
-
-	function removeShapeFromBoard(board, shape, shapePos)
-	{
-		fillShapeOnBoard(board, shape, shapePos, 0);
-	}
-
-	function addShapeOnBoard(board, shape, shapePos)
-	{
-		var positionsInBoard = shape.positionsInBoard(shapePos);
-		for (var i = 0; i < positionsInBoard.length; i++)
-		{
-			var pos = positionsInBoard[i];
-			board[pos.x][pos.y] = 1;
-		}
-	}
-
-	function fillShapeOnBoard(board, shape, shapePos, value)
-	{
-
-	}
-
-	function landOnBoard(board, shape, shapePos)
-	{
-		var positionsInBoard = shape.positionsInBoard(shapePos);
-		for(var i = 0; i < positionsInBoard.length; i++)
-		{
-			var pos = { x: positionsInBoard[i].x + 1, y: positionsInBoard[i].y };
-			if (isInsideTheBoard(board, pos) && (pos.x == board.length -1 || board[pos.x][pos.y] === 1))
-			{
-				return true;
+			else {
+				game.currentShape = newShape;
+				game.currentPos = newPos;
 			}
+			game.isGameOver = isGameOver(game);
 		}
-		return false;
-	}
-
-	function isValidOnBoard(board, shape, shapePos)
-	{
-		var positionsInBoard = shape.positionsInBoard(shapePos);
-		for(var i = 0; i < positionsInBoard.length; i++)
-		{
-			var pos = positionsInBoard[i];
-			if (!isInsideTheBoard(board, pos))
-			{
-				return false;
-			}
-			if (board[pos.x][pos.y] === 1)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	function isInsideTheBoard(board, pos)
-	{
-		return pos.x >= 0 && pos.x <= board.length - 1 && pos.y >= 0 && pos.y <= board[0].length - 1;
 	}
 
 	return Game;
-}
-);
+});

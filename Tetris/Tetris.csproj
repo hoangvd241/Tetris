@@ -52,8 +52,8 @@
     <Content Include="LZTShape.js" />
     <Content Include="Render.js" />
     <Content Include="Shape.js" />
+    <Content Include="ShapeFactory.js" />
     <Content Include="tetris.html" />
-    <Content Include="Zhape.js" />
     <Content Include="require.js" />
     <Content Include="SShape.js" />
     <Content Include="tetris.js" />
