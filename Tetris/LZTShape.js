@@ -1,18 +1,18 @@
 ﻿/*global define*/
 
 define(
-['./Shape'],
+['Shape'],
 function (Shape) {
-	function LZTShape(arr) {
-		Shape.call(this, arr);
+	function LZTShape(arr, name) {
+		Shape.call(this, arr, name);
 	}
 
 	LZTShape.prototype = Object.create(Shape.prototype);
 	LZTShape.prototype.constructor = LZTShape;
 
-	LZTShape.createLShape = function () { return new LZTShape([[1, 0, 0], [1, 0, 0], [1, 1, 0]]); };
-	LZTShape.createTShape = function () { return new LZTShape([[0, 1, 0], [1, 1, 1], [0, 0, 0]]); };
-	LZTShape.createZShape = function () { return new LZTShape([[0, 1, 1], [1, 1, 0], [0, 0, 0]]); };
+	LZTShape.createLShape = function () { return new LZTShape([[1, 0, 0], [1, 0, 0], [1, 1, 0]], 'L'); };
+	LZTShape.createTShape = function () { return new LZTShape([[0, 1, 0], [1, 1, 1], [0, 0, 0]], 'T'); };
+	LZTShape.createZShape = function () { return new LZTShape([[0, 1, 1], [1, 1, 0], [0, 0, 0]], 'Z'); };
 
 	LZTShape.prototype.rotate = function () {
 		var rotatedArr = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];

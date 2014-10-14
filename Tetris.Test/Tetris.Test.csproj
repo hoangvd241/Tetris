@@ -36,9 +36,12 @@
     <None Include="Chutzpah.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.js" />
     <Content Include="GameSpec.js" />
     <Content Include="IShapeSpec.js" />
+    <Content Include="jasmine-jquery.js" />
     <Content Include="LZTShapeSpec.js" />
+    <Content Include="RenderSpec.js" />
     <Content Include="SShapeSpec.js" />
   </ItemGroup>
   <ItemGroup>

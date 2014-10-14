@@ -1,6 +1,6 @@
 ﻿/*global define */
 
-define(['./ShapeFactory'],
+define(['ShapeFactory'],
 function (ShapeFactory) {
 	function Game(width, length) {
 		var initBoard = function (game) {
@@ -18,12 +18,8 @@ function (ShapeFactory) {
 		this.isGameOver = false;
 	}
 
-	Game.prototype.rotateCurrentShape = function () {
+	Game.prototype.rotate = function () {
 		move(this, this.currentShape, this.currentShape.rotate(), this.currentPos, this.currentPos);
-	};
-
-	Game.prototype.moveDown = function () {
-		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x + 1, y: this.currentPos.y });
 	};
 
 	Game.prototype.moveLeft = function () {
@@ -34,12 +30,7 @@ function (ShapeFactory) {
 		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x, y: this.currentPos.y + 1 });
 	};
 
-	function initShape(game) {
-		game.currentShape = ShapeFactory.generateRandomShape();
-		game.currentPos = { x: 0, y: Math.floor(game.board.length / 2) };
-	}
-
-	function move(game, oldShape, newShape, oldPos, newPos) {
+	Game.prototype.moveDown = function () {
 		var isDirtyRow = function (row) {
 			for (var i = 0; i < row.length; i++) {
 				if (row[i] === 1) {
@@ -58,29 +49,11 @@ function (ShapeFactory) {
 			return true;
 		};
 
-		var isInsideTheBoard = function (board, pos) {
-			return pos.x >= 0 && pos.x <= board.length - 1 && pos.y >= 0 && pos.y <= board[0].length - 1;
-		};
-
-		var isValidOnBoard = function (board, shape, shapePos) {
-			var positionsOnBoard = shape.positionsOnBoard(shapePos);
-			for (var i = 0; i < positionsOnBoard.length; i++) {
-				var pos = positionsOnBoard[i];
-				if (!isInsideTheBoard(board, pos)) {
-					return false;
-				}
-				if (board[pos.x][pos.y] === 1) {
-					return false;
-				}
-			}
-			return true;
-		};
-
 		var landOnBoard = function (board, shape, shapePos) {
 			var positionsOnBoard = shape.positionsOnBoard(shapePos);
 			for (var i = 0; i < positionsOnBoard.length; i++) {
-				var pos = { x: positionsOnBoard[i].x + 1, y: positionsOnBoard[i].y };
-				if (isInsideTheBoard(board, pos) && (pos.x === board.length - 1 || board[pos.x][pos.y] === 1)) {
+				var nextPos = { x : positionsOnBoard[i].x + 1, y : positionsOnBoard[i].y};
+				if (positionsOnBoard[i].x === board.length - 1 || (isInsideTheBoard(board, nextPos) && board[nextPos.x][nextPos.y] === 1)) {
 					return true;
 				}
 			}
@@ -128,21 +101,48 @@ function (ShapeFactory) {
 			}
 		};
 
-		var isGameOver = function (game) {
-			return isDirtyRow(game.board[0]);
-		};
+		if (!this.isGameOver)
+		{
+			if (landOnBoard(this.board, this.currentShape, this.currentPos)) {
+				addShapeOnBoard(this.board, this.currentShape, this.currentPos);
+				removeFilledLines(this.board);
+				initShape(this);
+			}
+			else
+			{
+				this.currentPos = { x: this.currentPos.x + 1, y: this.currentPos.y };
+			}
+		}
+	};
 
+	function initShape(game) {
+		game.currentShape = ShapeFactory.generateRandomShape();
+		game.currentPos = { x: 0, y: Math.floor(game.board.length / 2) };
+		game.isGameOver = !isValidOnBoard(game.board, game.currentShape, game.currentPos);
+	}
+
+	function isInsideTheBoard(board, pos) {
+		return pos.x >= 0 && pos.x <= board.length - 1 && pos.y >= 0 && pos.y <= board[0].length - 1;
+	}
+
+	function isValidOnBoard(board, shape, shapePos) {
+		var positionsOnBoard = shape.positionsOnBoard(shapePos);
+		for (var i = 0; i < positionsOnBoard.length; i++) {
+			var pos = positionsOnBoard[i];
+			if (!isInsideTheBoard(board, pos)) {
+				return false;
+			}
+			if (board[pos.x][pos.y] === 1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	function move(game, oldShape, newShape, oldPos, newPos) {
 		if (!game.isGameOver && isValidOnBoard(game.board, newShape, newPos)) {
-			if (landOnBoard(game.board, newShape, newPos)) {
-				addShapeOnBoard(game.board, newShape, newPos);
-				removeFilledLines(game.board);
-				initShape(game);
-			}
-			else {
-				game.currentShape = newShape;
-				game.currentPos = newPos;
-			}
-			game.isGameOver = isGameOver(game);
+			game.currentShape = newShape;
+			game.currentPos = newPos;
 		}
 	}
 

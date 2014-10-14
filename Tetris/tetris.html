@@ -2,9 +2,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Tetris</title>
+    <link href="game.css" rel="stylesheet"/>
+    <script data-main="main.js" src="require.js"></script>
 </head>
 <body>
-  <div id="tetrisContainer">
+  <div id="pages">
+    <section id="menu">
+      <h1>Tetris</h1>
+      <ul>
+        <li><a href="#!/game/new">New Game</a></li>
+        <li><a href="#!/help">Help</a></li>
+      </ul>
+    </section>
+
+    <section id="game"></section>
+
+    <section id="gameover"></section>
+
+    <section id="help">
+      <p>Welcom to Tetris - by TV</p>
+    </section>
   </div>
 </body>
 </html>

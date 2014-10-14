@@ -1,6 +1,6 @@
 ﻿/*global define*/
 
-define(['./LZTShape', './SShape', './IShape'],
+define(['LZTShape', 'SShape', 'IShape'],
 function (LZTShape, SShape, IShape) {
 	function ShapeFactory() {
 	}

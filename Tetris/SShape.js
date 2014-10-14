@@ -1,9 +1,9 @@
 ﻿/*global define*/
 
-define(['./Shape'],
+define(['Shape'],
 function (Shape) {
 	function SShape() {
-		Shape.call(this, [[1, 1], [1, 1]]);
+		Shape.call(this, [[1, 1], [1, 1]], 'S');
 	}
 
 	SShape.prototype = Object.create(Shape.prototype);

@@ -1,8 +1,9 @@
 ﻿/*global define*/
 
 define(function () {
-	function Shape(arr) {
+	function Shape(arr, name) {
 		this.arr = arr;
+		this.name = name;
 	}
 
 	Shape.prototype.rotate = function () { throw "Implement in subclass"; };

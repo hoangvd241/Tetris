@@ -1,9 +1,10 @@
 {
     "Framework": "jasmine",
-    "TestHarnessReferenceMode" :  "AMD",
+    "TestHarnessReferenceMode": "AMD",
     "TestHarnessLocationMode": "SettingsFileAdjacent",
+    "AMDBasePath": "../Tetris/",
     "References": [
         { "Path": "../Tetris/require.js" },
-        { "Path":  "../Tetris/config.js" }
+        { "Path": "config.js" }
     ]
 }

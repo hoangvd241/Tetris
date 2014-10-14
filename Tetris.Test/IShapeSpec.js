@@ -2,7 +2,7 @@
 /*global describe, it, expect, beforeEach */
 
 define(
-['../Tetris/IShape'],
+['IShape'],
 function (IShape)
 {
 	describe('IShape test', function ()

@@ -46,10 +46,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config.js" />
+    <Content Include="bootstrapper.js" />
+    <Content Include="Controller.js" />
+    <Content Include="game.css" />
     <Content Include="Game.js" />
     <Content Include="IShape.js" />
+    <Content Include="jquery-1.11.1.js" />
     <Content Include="LZTShape.js" />
+    <Content Include="main.js" />
     <Content Include="Render.js" />
     <Content Include="Shape.js" />
     <Content Include="ShapeFactory.js" />
