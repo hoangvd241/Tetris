@@ -1,33 +1,33 @@
 ﻿/*global define */
 
-define(['ShapeFactory'],
-function (ShapeFactory) {
-	function Game(width, length) {
-		var initBoard = function (game) {
-			game.board = new Array(length);
-			for (var i = 0; i < length; i++) {
-				game.board[i] = new Array(width);
-				for (var j = 0; j < width; j++) {
-					game.board[i][j] = 0;
-				}
-			}
-		};
-
-		initBoard(this);
-		initShape(this);
-		this.isGameOver = false;
+define(['ShapeFactory', 'Event'],
+function (ShapeFactory, Event) {
+	function Game() {
 	}
 
+	Game.prototype.init = function (width, length) {
+		this.board = new Array(length);
+		for (var i = 0; i < length; i++) {
+			this.board[i] = new Array(width);
+			for (var j = 0; j < width; j++) {
+				this.board[i][j] = 0;
+			}
+		}
+		drawBoard(this.board);
+		initShape(this);
+		this.isGameOver = false;
+	};
+
 	Game.prototype.rotate = function () {
-		move(this, this.currentShape, this.currentShape.rotate(), this.currentPos, this.currentPos);
+		move(this, this.currentShape.rotate(), this.currentPos);
 	};
 
 	Game.prototype.moveLeft = function () {
-		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x, y: this.currentPos.y - 1 });
+		move(this, this.currentShape, { x: this.currentPos.x, y: this.currentPos.y - 1 });
 	};
 
 	Game.prototype.moveRight = function () {
-		move(this, this.currentShape, this.currentShape, this.currentPos, { x: this.currentPos.x, y: this.currentPos.y + 1 });
+		move(this, this.currentShape, { x: this.currentPos.x, y: this.currentPos.y + 1 });
 	};
 
 	Game.prototype.moveDown = function () {
@@ -106,19 +106,44 @@ function (ShapeFactory) {
 			if (landOnBoard(this.board, this.currentShape, this.currentPos)) {
 				addShapeOnBoard(this.board, this.currentShape, this.currentPos);
 				removeFilledLines(this.board);
+				drawBoard(this.board);
 				initShape(this);
 			}
 			else
 			{
-				this.currentPos = { x: this.currentPos.x + 1, y: this.currentPos.y };
+				var newPos = { x: this.currentPos.x + 1, y: this.currentPos.y };
+				drawShape(this.currentShape.positionsOnBoard(this.currentPos), this.currentShape.positionsOnBoard(newPos));
+				this.currentPos = newPos;
 			}
 		}
 	};
 
+	Game.prototype.bindDrawBoard = function (callback) {
+		Event.sub('board_update', callback);
+	};
+
+	Game.prototype.bindDrawShape = function (callback) {
+		Event.sub('shape_update', callback);
+	};
+
+	function drawBoard(board) {
+		Event.pub('board_update', board);
+	}
+
+	function drawShape(oldPos, newPos) {
+		Event.pub('shape_update', { oldPos: oldPos, newPos: newPos });
+	}
+
 	function initShape(game) {
-		game.currentShape = ShapeFactory.generateRandomShape();
-		game.currentPos = { x: 0, y: Math.floor(game.board.length / 2) };
-		game.isGameOver = !isValidOnBoard(game.board, game.currentShape, game.currentPos);
+		var newShape = ShapeFactory.generateRandomShape();
+		var newPos = { x: 0, y: Math.floor(game.board[0].length / 2) };
+		game.isGameOver = !isValidOnBoard(game.board, newShape, newPos);
+		if (!game.isGameOver)
+		{
+			game.currentShape = newShape;
+			game.currentPos = newPos;
+			drawShape([], game.currentShape.positionsOnBoard(game.currentPos));
+		}
 	}
 
 	function isInsideTheBoard(board, pos) {
@@ -139,8 +164,9 @@ function (ShapeFactory) {
 		return true;
 	}
 
-	function move(game, oldShape, newShape, oldPos, newPos) {
+	function move(game, newShape, newPos) {
 		if (!game.isGameOver && isValidOnBoard(game.board, newShape, newPos)) {
+			drawShape(game.currentShape.positionsOnBoard(game.currentPos), newShape.positionsOnBoard(newPos));
 			game.currentShape = newShape;
 			game.currentPos = newPos;
 		}

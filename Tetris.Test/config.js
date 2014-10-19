@@ -2,6 +2,7 @@
 require.config({
 	baseUrl : '../Tetris',
 	paths: {
+		underscore : 'underscore',
 		jquery: 'jquery-1.11.1',
 		Render: 'Render',
 		Game: 'Game',
@@ -10,6 +11,7 @@ require.config({
 		IShape: 'IShape',
 		SShape: 'SShape',
 		ShapeFactory: 'ShapeFactory',
+		Event : 'Event',
 		'jasmine-jquery' : '../Tetris.Test/jasmine-jquery'
 	},
 	shim: {

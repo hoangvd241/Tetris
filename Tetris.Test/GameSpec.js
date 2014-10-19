@@ -7,7 +7,7 @@ define(['Game', 'LZTShape', 'SShape'], function (Game, LZTShape, SShape)
 	{
 		var game, oldPos, oldShape;
 		beforeEach(function () {
-			game = new Game(8, 11);
+			game = new Game();
 							//col: 0, 1, 2, 3, 4, 5, 6, 7, 8
 			game.board = [[0, 0, 0, 0, 0, 0, 0, 0, 0], //row 0
 										[0, 0, 0, 0, 0, 0, 0, 0, 0], //1
@@ -116,7 +116,6 @@ define(['Game', 'LZTShape', 'SShape'], function (Game, LZTShape, SShape)
 																	[1, 1, 0, 1, 1, 0, 0, 0, 1], //9
 																	[1, 1, 1, 1, 1, 1, 0, 1, 1], //10
 																	[1, 1, 1, 1, 1, 1, 0, 1, 1]]); //11
-			expect(game.currentPos.x).toEqual(0);
 		});
 
 		it('game over', function () {

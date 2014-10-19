@@ -38,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Chewy.ttf" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -46,8 +47,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bootstrapper.js" />
     <Content Include="Controller.js" />
+    <Content Include="Event.js" />
     <Content Include="game.css" />
     <Content Include="Game.js" />
     <Content Include="IShape.js" />
@@ -60,7 +61,6 @@
     <Content Include="tetris.html" />
     <Content Include="require.js" />
     <Content Include="SShape.js" />
-    <Content Include="tetris.js" />
     <Content Include="underscore.js" />
     <Content Include="Web.config" />
   </ItemGroup>

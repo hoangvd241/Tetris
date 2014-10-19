@@ -4,41 +4,48 @@ define(
 ['jquery'],
 function ($)
 {
-	function Render(game)
+	function Render()
 	{
-		this.game = game;
 	}
 
-	var boardContainerId = '#boardContainer';
+	Render.boardContainerId = 'boardContainer';
+	Render.boardFilledClass = 'boardFilled';
+	Render.shapeFilledClass = 'shapeFilled';
 
-	Render.prototype.init = function () {
-		var game = this.game;
-		var gameBoard = game.board;
-		var board = $(boardContainerId).empty();
-		var positions = [];
-
-		for (var i = 0; i < gameBoard.length; i++) {
-			for (var j = 0; j < gameBoard[0].length; j++)
-			{
-				var id = i + '-' + j;
-				var $node = $('<div />', { 
-					id: id,
-					'class': gameBoard[i][j] === 1 ? 'filledPosition' : 'emptyPosition'
-				});
-				positions[id] = $node;
-				board.append($node);
+	Render.prototype.drawBoard = function (board) {
+		var boardContainer = $('#' + Render.boardContainerId).empty();
+		for (var i = 0; i < board.length; i++) {
+			for (var j = 0; j < board[0].length; j++) {
+				var id = getNodeId(i, j);
+				var node = $('#' + id)[0];
+				if (!node) {
+					node = $('<div />', { id: id });
+					boardContainer.append(node);
+				}
+				if (board[i][j] === 1) {
+					node.addClass(Render.boardFilledClass);
+				}
+				else {
+					node.removeAttr('class');
+				}
 			}
 		}
-
-		this.board = board;
-		this.positions = positions;
 	};
 
-	Render.prototype.drawShape = function (shape, shapePos, undraw) {
-		var shapPositions = shape.positionsOnBoard(shapePos);
-		for (var i = 0; i < shapPositions.length; i++) {
-			var pos = shapPositions[i];
-			this.positions[pos.x + '-' + pos.y].className = undraw ? 'emptyPosition' : shape.name + 'shape';
+	function getNodeId(i, j)
+	{
+		return 'node-' + i + '-' + j;
+	}
+
+	Render.prototype.drawShape = function (posChanged) {
+		var oldPos = posChanged.oldPos;
+		var newPos = posChanged.newPos;
+		for (var i = 0; i < oldPos.length; i++) {
+			$('#' + getNodeId(oldPos[i].x, oldPos[i].y)).removeAttr('class');
+		}
+
+		for (var i = 0; i < newPos.length; i++) {
+			$('#' + getNodeId(newPos[i].x, newPos[i].y)).addClass(Render.shapeFilledClass);
 		}
 	};
 
