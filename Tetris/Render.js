@@ -13,20 +13,18 @@ function ($)
 	Render.shapeFilledClass = 'shapeFilled';
 
 	Render.prototype.drawBoard = function (board) {
-		var boardContainer = $('#' + Render.boardContainerId).empty();
+		var boardContainer = $('#' + Render.boardContainerId);
 		for (var i = 0; i < board.length; i++) {
 			for (var j = 0; j < board[0].length; j++) {
 				var id = getNodeId(i, j);
-				var node = $('#' + id)[0];
-				if (!node) {
+				var node = $('#' + id);
+				if (node.length === 0) {
 					node = $('<div />', { id: id });
 					boardContainer.append(node);
 				}
+				node.removeAttr('class');
 				if (board[i][j] === 1) {
 					node.addClass(Render.boardFilledClass);
-				}
-				else {
-					node.removeAttr('class');
 				}
 			}
 		}
@@ -44,9 +42,18 @@ function ($)
 			$('#' + getNodeId(oldPos[i].x, oldPos[i].y)).removeAttr('class');
 		}
 
-		for (var i = 0; i < newPos.length; i++) {
-			$('#' + getNodeId(newPos[i].x, newPos[i].y)).addClass(Render.shapeFilledClass);
+		for (var j = 0; j < newPos.length; j++) {
+			$('#' + getNodeId(newPos[j].x, newPos[j].y)).addClass(posChanged.name + Render.shapeFilledClass);
 		}
+	};
+
+	Render.prototype.promptGameOver = function () {
+		var boardContainer = $('#' + Render.boardContainerId).empty();
+		$('<h1></h1>').text('Game Over').appendTo(boardContainer);
+	};
+
+	Render.prototype.clearBoard = function () {
+		return $('#' + Render.boardContainerId).empty();
 	};
 
 	return Render;

@@ -13,6 +13,7 @@ function (Shape) {
 		var newArr = this.arr.length === 1 ? [[1], [1], [1], [1]] : [[1, 1, 1, 1]];
 		var result = new IShape();
 		result.arr = newArr;
+		result.name = this.name;
 		return result;
 	};
 

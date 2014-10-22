@@ -69,35 +69,28 @@ function (ShapeFactory, Event) {
 		};
 
 		var removeFilledLines = function (board) {
-			var resetBottomRows = function (array, startRow) {
-				for (var i = startRow; i < array.length; i++) {
-					for (var j = 0; j < array[0].length; j++) {
-						array[i][j] = 0;
+			var noOfMoves = 0;
+			var noOfMovesObj = {};
+			for (var i = board.length - 1; i >= 0; i--) {
+				if (isFilledRow(board[i]))
+				{
+					noOfMoves++;
+					board[i] = new Array(board[0].length);
+					for (var col = 0; col < board[0].length; col++) {
+						board[i][col] = 0;
 					}
 				}
-			};
-
-			var moveRowsToBottom = function (array, startRow, endRow) {
-				for (var i = endRow; i >= startRow; i--) {
-					var idx = board.length - 1 - endRow + i;
-					var tmp = array[idx];
-					array[idx] = array[i];
-					array[i] = tmp;
+				else if (isDirtyRow(board[i]) && noOfMoves !== 0) {
+					noOfMovesObj[i] = noOfMoves;
 				}
-			};
-
-			var firstRowFilled = board.length;
-			while (firstRowFilled - 1 >= 0 && isFilledRow(board[firstRowFilled - 1])) {
-				firstRowFilled--;
 			}
-			resetBottomRows(board, firstRowFilled);
 
-			if (firstRowFilled < board.length) {
-				var firstRowDirty = firstRowFilled;
-				while (firstRowDirty - 1 >= 0 && isDirtyRow(board[firstRowDirty - 1])) {
-					firstRowDirty--;
+			for (var j = board.length - 2; j >= 0; j--) {
+				if (noOfMovesObj[j]) {
+					var tmp = board[j + noOfMovesObj[j]];
+					board[j + noOfMovesObj[j]] = board[j];
+					board[j] = tmp;
 				}
-				moveRowsToBottom(board, firstRowDirty, firstRowFilled - 1);
 			}
 		};
 
@@ -112,7 +105,7 @@ function (ShapeFactory, Event) {
 			else
 			{
 				var newPos = { x: this.currentPos.x + 1, y: this.currentPos.y };
-				drawShape(this.currentShape.positionsOnBoard(this.currentPos), this.currentShape.positionsOnBoard(newPos));
+				drawShape(this.currentShape.positionsOnBoard(this.currentPos), this.currentShape.positionsOnBoard(newPos), this.currentShape.name);
 				this.currentPos = newPos;
 			}
 		}
@@ -126,12 +119,20 @@ function (ShapeFactory, Event) {
 		Event.sub('shape_update', callback);
 	};
 
+	Game.prototype.bindGameOver = function (callback) {
+		Event.sub('game_over', callback);
+	};
+
 	function drawBoard(board) {
 		Event.pub('board_update', board);
 	}
 
-	function drawShape(oldPos, newPos) {
-		Event.pub('shape_update', { oldPos: oldPos, newPos: newPos });
+	function drawShape(oldPos, newPos, shapeName) {
+		Event.pub('shape_update', { oldPos: oldPos, newPos: newPos, name : shapeName });
+	}
+
+	function promptGameOver() {
+		Event.pub('game_over');
 	}
 
 	function initShape(game) {
@@ -142,7 +143,11 @@ function (ShapeFactory, Event) {
 		{
 			game.currentShape = newShape;
 			game.currentPos = newPos;
-			drawShape([], game.currentShape.positionsOnBoard(game.currentPos));
+			drawShape([], game.currentShape.positionsOnBoard(game.currentPos), game.currentShape.name);
+		}
+		else
+		{
+			promptGameOver();
 		}
 	}
 
@@ -166,7 +171,7 @@ function (ShapeFactory, Event) {
 
 	function move(game, newShape, newPos) {
 		if (!game.isGameOver && isValidOnBoard(game.board, newShape, newPos)) {
-			drawShape(game.currentShape.positionsOnBoard(game.currentPos), newShape.positionsOnBoard(newPos));
+			drawShape(game.currentShape.positionsOnBoard(game.currentPos), newShape.positionsOnBoard(newPos), newShape.name);
 			game.currentShape = newShape;
 			game.currentPos = newPos;
 		}

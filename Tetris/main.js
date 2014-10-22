@@ -17,33 +17,40 @@ require.config({
 );
 
 define(['jquery', 'Game', 'Render'], function ($, Game, Render) {
-	//$(document).ready(function () {
-	//	$(window).bind('hashchange', function () {
-	//		Controller.route(!location.hash ? '/' : location.hash.replace('#!', ''));
-	//	}).trigger('hashchange');
-
-	//	$('a').each(function () {
-	//		var a = $(this);
-	//		if (a.attr('href').substring(0, 4) != 'http') {
-	//			a.bind('touchstart', function () {
-	//				e.preventDefault();
-	//				location.hash = $(this).attr('href');
-	//			})
-	//		}
-	//	});
-
-	//	setTimeout(function () {
-	//		$('#pages').addClass('enabletransition');
-	//	}, 500);
-	//});
-
 	$(document).ready(function () {
-		var game = new Game();
-		var render = new Render();
-		game.bindDrawBoard(render.drawBoard);
-		game.bindDrawShape(render.drawShape);
+		var game;
+		var render;
 
-		$(document).keydown(function (e) {
+		var startGame = function (e) {
+			if (e.which === 32) {
+				e.preventDefault();
+				$(document).unbind('keydown', startGame);
+
+				game = new Game();
+				render = new Render();
+
+				game.bindDrawBoard(render.drawBoard);
+				game.bindDrawShape(render.drawShape);
+				game.bindGameOver(render.promptGameOver);
+
+				$(document).keydown(controlGame);
+
+				game.bindGameOver(function () {
+					$(document).unbind('keydown', controlGame);
+					clearInterval(dropDownInterval);
+				});
+
+				render.clearBoard();
+				game.init(10, 20);
+
+				var dropDownInterval = setInterval(function () {
+					game.moveDown();
+				}, 1000);
+			}
+		};
+
+		var controlGame = function (e) {
+			/*jshint white:false*/
 			switch (e.which) {
 				case 37:
 					game.moveLeft();
@@ -60,11 +67,10 @@ define(['jquery', 'Game', 'Render'], function ($, Game, Render) {
 				default:
 					return;
 			}
-			e.preventDefault;
-		});
+			/*jshint white:true*/
+			e.preventDefault();
+		};
 
-		game.init(10, 20);
-
-
+		$(document).keydown(startGame);
 	});
 });

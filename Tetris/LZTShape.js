@@ -21,7 +21,7 @@ function (Shape) {
 				rotatedArr[j][2 - i] = this.arr[i][j];
 			}
 		}
-		return new LZTShape(rotatedArr);
+		return new LZTShape(rotatedArr, this.name);
 	};
 
 	return LZTShape;
