@@ -1,4 +1,4 @@
 Tetris
 ======
 
-Javascript tetris game with jQuery, requirejs, jasmine
+Javascript tetris game with jQuery, requirejs, and jasmine.
